@@ -15,7 +15,6 @@ var win = (function () {
   var win = panelGlobal instanceof Panel ? panelGlobal : new Window("palette");
   if (!(panelGlobal instanceof Panel)) win.text = "IrcImport";
   win.preferredSize.width = 60;
-  win.preferredSize.height = 100;
   win.orientation = "column";
   win.alignChildren = ["center", "top"];
   win.spacing = 5;
@@ -26,7 +25,7 @@ var win = (function () {
   });
   ImportBtn.text = "Import";
   ImportBtn.preferredSize.height = 40;
-  ImportBtn.helpTip = "import lrc file";
+  ImportBtn.helpTip = "Import lrc file";
 
   var ExchangeBtn = win.add("button", undefined, undefined, {
     name: "ExchangeBtn",
@@ -34,7 +33,14 @@ var win = (function () {
   ExchangeBtn.text = "Exchange";
   ExchangeBtn.preferredSize.height = 40;
   ExchangeBtn.helpTip =
-    "exchange the values of two keyframes in the sourcetext\n between two text layers";
+    "Exchange the values of two keyframes in the sourcetext\n between two text layers";
+
+  var ExportBtn = win.add("button", undefined, undefined, {
+    name: "ExportBtn",
+  });
+  ExportBtn.text = "Export";
+  ExportBtn.preferredSize.height = 40;
+  ExportBtn.helpTip = "Export lrc file";
 
   win.layout.layout(true);
   win.layout.resize();
@@ -52,6 +58,7 @@ var scriptName = "lrcImport";
 
 win.ImportBtn.onClick = importLrcFile;
 win.ExchangeBtn.onClick = exchangeLrc;
+win.ExportBtn.onClick = exportLrc;
 
 function importLrcFile() {
   //get activeComp
@@ -185,17 +192,38 @@ function exchangeLrc() {
 
         var valueKey1 = selectedLayers[0].sourceText.keyValue(selectedKey1);
         var valueKey2 = selectedLayers[1].sourceText.keyValue(selectedKey2);
+
         var tempFont = valueKey1.font;
+        var marker1 = selectedLayers[0].property("Marker").keyValue(selectedKey1);
+        var marker2 = selectedLayers[1].property("Marker").keyValue(selectedKey2);
+
+        selectedLayers[0].property("Marker").setValueAtKey(selectedKey1, marker2);
+        selectedLayers[1].property("Marker").setValueAtKey(selectedKey2, marker1);
+
         valueKey1.font = valueKey2.font;
         valueKey2.font = tempFont;
-        
+
         selectedLayers[0].sourceText.setValueAtKey(selectedKey1, valueKey2);
         selectedLayers[1].sourceText.setValueAtKey(selectedKey2, valueKey1);
       } catch (error) {
-        alert(error,scriptName);
+        alert(error, scriptName);
         return false;
       }
     }
   }
   return true;
+}
+
+function exportLrc() {
+  var thisComp = app.project.activeItem;
+  if (!thisComp || !(thisComp instanceof CompItem)) {
+    alert("Please select a composition before exchange", scriptName);
+    return false;
+  } else {
+    var selectedLayers = thisComp.selectedLayers;
+    var selectedTextLayers = selectedLayers.filter(function (layer) {
+      return layer instanceof TextLayer;
+    });
+    // incomplete
+  }
 }

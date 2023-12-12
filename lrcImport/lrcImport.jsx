@@ -318,26 +318,6 @@
         }
 
       }
-
-      /*   if (curTime1 === curTime2) {
-          str += transformTime(curTime1) + curText1 + '\n'
-          str += transformTime(curTime2) + curText2 + '\n'
-        } else if (curTime1 < curTime2) {
-          str += transformTime(curTime1) + curText1 + '\n'
-          str += transformTime(curTime1) + prevText2 + '\n'
-        } else if(curTime1 > curTime2){
-          str += transformTime(curTime2) + prevText1 + '\n'
-          str += transformTime(curTime2) + prevText2 + '\n'
-        } */
-
-      /*     for (var i = 0; i < outLrc1.length; i++) {
-        var time1 = transformTime(outLrc1[i].time);
-        var text1 = outLrc1[i].text;
-        var time2 = transformTime(outLrc2[i].time);
-        var text2 = outLrc2[i].text;
-        strLrc += time1 + text1 + "\n";
-        strLrc += time2 + text2 + "\n";
-      } */
     } else {
       alert("Error", scriptName);
     }

@@ -3,7 +3,7 @@
  * @author 奈杰Rubia_a
  * @copyright &copy; 2023 奈杰Rubia_a Doe. All rights reserved.
  * @license MIT
- * @version 1.1.1
+ * @version 1.2.1
  * @date 2023.12.11
  *
  * @description import lrc file into Adobe After Effects and Support bilingual lyrics
@@ -57,9 +57,15 @@
   var reg = /\[(\d{1,2}):(\d{1,2}.\d{1,3})\](.*)/;
   var scriptName = "lrcImport";
 
-  win.ImportBtn.onClick = importLrcFile;
-  win.ExchangeBtn.onClick = exchangeLrc;
-  win.ExportBtn.onClick = exportLrc;
+  win.ImportBtn.onClick = function () {
+    importLrcFile();
+  };
+  win.ExchangeBtn.onClick = function () {
+    exchangeLrc();
+  };
+  win.ExportBtn.onClick = function () {
+    exportLrc();
+  };
 
   function importLrcFile() {
     //get activeComp
@@ -250,7 +256,7 @@
       var objText = [];
       for (var j = 1; j <= textKeyLength; j++) {
         var keyTime = electedTextLayers[i].sourceText.keyTime(j);
-        var keyValue = electedTextLayers[i].sourceText.keyValue(j);
+        var keyValue = electedTextLayers[i].sourceText.keyValue(j).text;
         objText.push({
           time: keyTime,
           text: keyValue,
@@ -277,20 +283,61 @@
       var outLrc = objOutLr[0];
       for (var i = 0; i < outLrc.length; i++) {
         var time = transformTime(outLrc[i].time);
-        var text = outLrc[i].text.text;
+        var text = outLrc[i].text;
         strLrc += time + text + "\n";
       }
     } else if (objOutLr.length === 2) {
       var outLrc1 = objOutLr[0];
       var outLrc2 = objOutLr[1];
-      for (var i = 0; i < outLrc1.length; i++) {
+      var prevText1 = outLrc1[0].text;
+      var prevText2 = outLrc2[0].text;
+      var index1 = 0;
+      var index2 = 0;
+      while (outLrc1[index1] && outLrc2[index2]) {
+        if (outLrc1[index1].time === outLrc2[index2].time) {
+          strLrc +=
+            transformTime(outLrc1[index1].time) + outLrc1[index1].text + "\n";
+          strLrc +=
+            transformTime(outLrc2[index2].time) + outLrc2[index2].text + "\n";
+          prevText1 = outLrc1[index1].text;
+          prevText2 = outLrc2[index2].text;
+          index1++;
+          index2++;
+        } else if (outLrc1[index1].time < outLrc2[index2].time) {
+          strLrc +=
+            transformTime(outLrc1[index1].time) + outLrc1[index1].text + "\n";
+          prevText1 = outLrc1[index1].text;
+          strLrc += transformTime(outLrc1[index1].time) + prevText2 + "\n";
+          index1++;
+        } else if (outLrc1[index1].time > outLrc2[index2].time) {
+          strLrc += transformTime(outLrc2[index2].time) + prevText1 + "\n";
+          strLrc +=
+            transformTime(outLrc2[index2].time) + outLrc2[index2].text + "\n";
+          prevText2 = outLrc2[index2].text;
+          index2++;
+        }
+
+      }
+
+      /*   if (curTime1 === curTime2) {
+          str += transformTime(curTime1) + curText1 + '\n'
+          str += transformTime(curTime2) + curText2 + '\n'
+        } else if (curTime1 < curTime2) {
+          str += transformTime(curTime1) + curText1 + '\n'
+          str += transformTime(curTime1) + prevText2 + '\n'
+        } else if(curTime1 > curTime2){
+          str += transformTime(curTime2) + prevText1 + '\n'
+          str += transformTime(curTime2) + prevText2 + '\n'
+        } */
+
+      /*     for (var i = 0; i < outLrc1.length; i++) {
         var time1 = transformTime(outLrc1[i].time);
-        var text1 = outLrc1[i].text.text;
+        var text1 = outLrc1[i].text;
         var time2 = transformTime(outLrc2[i].time);
-        var text2 = outLrc2[i].text.text;
+        var text2 = outLrc2[i].text;
         strLrc += time1 + text1 + "\n";
         strLrc += time2 + text2 + "\n";
-      }
+      } */
     } else {
       alert("Error", scriptName);
     }
@@ -306,5 +353,9 @@
 
   function PrefixZero(number, zeroNum) {
     return (Array(zeroNum).join(0) + number).slice(-zeroNum);
+  }
+
+  function maxFix(number, max) {
+    return number < max ? number + 1 : max;
   }
 })(this);

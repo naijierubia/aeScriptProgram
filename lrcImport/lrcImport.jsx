@@ -5,6 +5,7 @@
  * @license MIT
  * @version 1.2.1
  * @date 2023.12.11
+ * @github https://github.com/naijierubia/aeScriptProgram
  *
  * @description import lrc file into Adobe After Effects and Support bilingual lyrics
  *

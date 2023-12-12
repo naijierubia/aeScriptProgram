@@ -316,7 +316,6 @@
           prevText2 = outLrc2[index2].text;
           index2++;
         }
-
       }
     } else {
       alert("Error", scriptName);
@@ -333,9 +332,5 @@
 
   function PrefixZero(number, zeroNum) {
     return (Array(zeroNum).join(0) + number).slice(-zeroNum);
-  }
-
-  function maxFix(number, max) {
-    return number < max ? number + 1 : max;
   }
 })(this);

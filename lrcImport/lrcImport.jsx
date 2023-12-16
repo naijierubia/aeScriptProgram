@@ -3,8 +3,8 @@
  * @author 奈杰Rubia_a
  * @copyright &copy; 2023 奈杰Rubia_a Doe. All rights reserved.
  * @license MIT
- * @version 1.2.1
- * @date 2023.12.11
+ * @version 1.2.2
+ * @date 2023.12.16
  * @github https://github.com/naijierubia/aeScriptProgram
  *
  * @description import lrc file into Adobe After Effects and Support bilingual lyrics
@@ -69,7 +69,6 @@
   };
 
   function importLrcFile() {
-    //get activeComp
     var thisComp = app.project.activeItem;
 
     if (!thisComp || !(thisComp instanceof CompItem)) {
@@ -84,6 +83,7 @@
         var objLrc = [];
         file.open("r");
         parseLrc(file, objLrc);
+        bubbleSort(objLrc);
         var isNums = judgeLangNums(objLrc);
         if (!isNums) {
           var lrcOneLang = thisComp.layers.addText("");
@@ -128,7 +128,18 @@
       }
     }
   }
-
+  function bubbleSort(arr) {
+    var len = arr.length;
+    for (var i = 0; i < len - 1; i++) {
+      for (var j = 0; j < len - 1 - i; j++) {
+        if (arr[j].time > arr[j + 1].time) {
+          var temp = arr[j];
+          arr[j] = arr[j + 1];
+          arr[j + 1] = temp;
+        }
+      }
+    }
+  }
   function judgeLangNums(objLrc) {
     var preTime = objLrc[0].time;
     for (var i = 1; i < objLrc.length; i++) {

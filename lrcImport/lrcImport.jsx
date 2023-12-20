@@ -3,7 +3,7 @@
  * @author 奈杰Rubia_a
  * @copyright &copy; 2023 奈杰Rubia_a Doe. All rights reserved.
  * @license MIT
- * @version 1.2.2
+ * @version 1.2.3
  * @date 2023.12.16
  * @github https://github.com/naijierubia/aeScriptProgram
  *
@@ -70,6 +70,8 @@
 
   function importLrcFile() {
     var thisComp = app.project.activeItem;
+    var importUndo = "Import Lrc File";
+    app.beginUndoGroup(importUndo);
 
     if (!thisComp || !(thisComp instanceof CompItem)) {
       alert("Please select a composition before import", scriptName);
@@ -97,17 +99,18 @@
           separateLrc(objLrc, objLrcLang1, objLrcLang2);
           var lrcLang1 = thisComp.layers.addText("");
           lrcLang1.name = File.decode(file.name) + "Lang1";
-          lrcLang1.position.setValue([compWidth / 2, compHeight / 2 + 50]);
+          lrcLang1.position.setValue([compWidth / 2, compHeight / 2 - 35]);
           addLrc(objLrcLang1, lrcLang1);
           judgeLrcTooLong(objLrcLang1, thisComp, lrcLang1.name);
 
           var lrcLang2 = thisComp.layers.addText("");
           lrcLang2.name = File.decode(file.name) + "Lang2";
-          lrcLang2.position.setValue([compWidth / 2, compHeight / 2 - 50]);
+          lrcLang2.position.setValue([compWidth / 2, compHeight / 2 + 35]);
           addLrc(objLrcLang2, lrcLang2);
           judgeLrcTooLong(objLrcLang2, thisComp, lrcLang2.name);
         }
         file.close();
+        app.endUndoGroup();
         return true;
       }
     }
@@ -196,6 +199,9 @@
 
   function exchangeLrc() {
     var thisComp = app.project.activeItem;
+    var exchangeUndo = "Exchange Text";
+    app.beginUndoGroup(exchangeUndo);
+
     if (!thisComp || !(thisComp instanceof CompItem)) {
       alert("Please select a composition before exchange", scriptName);
       return false;
@@ -238,6 +244,7 @@
         }
       }
     }
+    app.endUndoGroup();
     return true;
   }
 

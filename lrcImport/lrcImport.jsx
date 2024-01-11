@@ -1,9 +1,9 @@
-/**
+﻿/**
  * @file lrcImport.jsx
  * @author 奈杰Rubia_a
  * @copyright &copy; 2023 奈杰Rubia_a Doe. All rights reserved.
  * @license MIT
- * @version 1.2.3
+ * @version 1.3.0
  * @date 2023.12.16
  * @github https://github.com/naijierubia/aeScriptProgram
  *
@@ -25,24 +25,24 @@
     var ImportBtn = win.add("button", undefined, undefined, {
       name: "ImportBtn",
     });
-    ImportBtn.text = "Import";
+    ImportBtn.text = "导入歌词";
     ImportBtn.preferredSize.height = 40;
-    ImportBtn.helpTip = "Import lrc file";
+    ImportBtn.helpTip = "导入.lrc格式的歌词，支持双语";
 
     var ExchangeBtn = win.add("button", undefined, undefined, {
       name: "ExchangeBtn",
     });
-    ExchangeBtn.text = "Exchange";
+    ExchangeBtn.text = "交换文本";
     ExchangeBtn.preferredSize.height = 40;
     ExchangeBtn.helpTip =
-      "Exchange the values of two keyframes in the sourcetext\n between two text layers";
+      "对于某些歌词文件可能会出现文本错位的情况，\n可以通过这个按钮快速交换两个文本关键帧的值";
 
     var ExportBtn = win.add("button", undefined, undefined, {
       name: "ExportBtn",
     });
-    ExportBtn.text = "Export";
+    ExportBtn.text = "导出歌词";
     ExportBtn.preferredSize.height = 40;
-    ExportBtn.helpTip = "Export lrc file";
+    ExportBtn.helpTip = "选中歌词至多两个文本层,\n将其源文本关键帧导出为.lrc文件";
 
     win.layout.layout(true);
     win.layout.resize();
@@ -70,14 +70,14 @@
 
   function importLrcFile() {
     var thisComp = app.project.activeItem;
-    var importUndo = "Import Lrc File";
+    var importUndo = "导入歌词";
     app.beginUndoGroup(importUndo);
 
     if (!thisComp || !(thisComp instanceof CompItem)) {
-      alert("Please select a composition before import", scriptName);
+      alert("请先选择一个合成", scriptName);
       return false;
     } else {
-      var file = File.openDialog("Import lrc File", "lrc:*.lrc");
+      var file = File.openDialog("导入歌词", "lrc:*.lrc");
       var compHeight = thisComp.height;
       var compWidth = thisComp.width;
 
@@ -97,17 +97,17 @@
           var objLrcLang1 = [];
           var objLrcLang2 = [];
           separateLrc(objLrc, objLrcLang1, objLrcLang2);
-          var lrcLang1 = thisComp.layers.addText("");
-          lrcLang1.name = File.decode(file.name) + "Lang1";
-          lrcLang1.position.setValue([compWidth / 2, compHeight / 2 - 35]);
-          addLrc(objLrcLang1, lrcLang1);
-          judgeLrcTooLong(objLrcLang1, thisComp, lrcLang1.name);
-
           var lrcLang2 = thisComp.layers.addText("");
           lrcLang2.name = File.decode(file.name) + "Lang2";
           lrcLang2.position.setValue([compWidth / 2, compHeight / 2 + 35]);
           addLrc(objLrcLang2, lrcLang2);
           judgeLrcTooLong(objLrcLang2, thisComp, lrcLang2.name);
+
+          var lrcLang1 = thisComp.layers.addText("");
+          lrcLang1.name = File.decode(file.name) + "Lang1";
+          lrcLang1.position.setValue([compWidth / 2, compHeight / 2 - 35]);
+          addLrc(objLrcLang1, lrcLang1);
+          judgeLrcTooLong(objLrcLang1, thisComp, lrcLang1.name);
         }
         file.close();
         app.endUndoGroup();
@@ -199,45 +199,22 @@
 
   function exchangeLrc() {
     var thisComp = app.project.activeItem;
-    var exchangeUndo = "Exchange Text";
+    var exchangeUndo = "交换文本";
     app.beginUndoGroup(exchangeUndo);
 
     if (!thisComp || !(thisComp instanceof CompItem)) {
-      alert("Please select a composition before exchange", scriptName);
+      alert("请先选择一个合成", scriptName);
       return false;
     } else {
       var selectedLayers = thisComp.selectedLayers;
       if (selectedLayers.length != 2) {
-        alert("Please select two text layers only ", scriptName);
+        alert("需要先选中两个文本层", scriptName);
         return false;
       } else {
         try {
-          var selectedKey1 = selectedLayers[0].sourceText.selectedKeys[0];
-          var selectedKey2 = selectedLayers[1].sourceText.selectedKeys[0];
-
-          var valueKey1 = selectedLayers[0].sourceText.keyValue(selectedKey1);
-          var valueKey2 = selectedLayers[1].sourceText.keyValue(selectedKey2);
-
-          var tempFont = valueKey1.font;
-          var marker1 = selectedLayers[0]
-            .property("Marker")
-            .keyValue(selectedKey1);
-          var marker2 = selectedLayers[1]
-            .property("Marker")
-            .keyValue(selectedKey2);
-
-          selectedLayers[0]
-            .property("Marker")
-            .setValueAtKey(selectedKey1, marker2);
-          selectedLayers[1]
-            .property("Marker")
-            .setValueAtKey(selectedKey2, marker1);
-
-          valueKey1.font = valueKey2.font;
-          valueKey2.font = tempFont;
-
-          selectedLayers[0].sourceText.setValueAtKey(selectedKey1, valueKey2);
-          selectedLayers[1].sourceText.setValueAtKey(selectedKey2, valueKey1);
+          var selectedLayer1 = selectedLayers[0];
+          var selectedLayer2 = selectedLayers[1];
+          swapText(selectedLayer1, selectedLayer2);
         } catch (error) {
           alert(error, scriptName);
           return false;
@@ -251,7 +228,7 @@
   function exportLrc() {
     var thisComp = app.project.activeItem;
     if (!thisComp || !(thisComp instanceof CompItem)) {
-      alert("Please select a composition before exchange", scriptName);
+      alert("请先选择一个合成", scriptName);
       return false;
     } else {
       var selectedLayers = thisComp.selectedLayers;
@@ -263,7 +240,7 @@
         var objOutLr = SourceText(selectedTextLayers);
         writeLrc(objOutLr);
       } else {
-        alert("Please select one or two text layers", scriptName);
+        alert("需要先选中一或者两个文本层", scriptName);
         return false;
       }
     }
@@ -287,12 +264,12 @@
   }
 
   function writeLrc(objOutLr) {
-    var file = File.saveDialog("Save Lrc File", "lrc:*.lrc");
+    var file = File.saveDialog("导出歌词", "lrc:*.lrc");
     if (file) {
       file.open("w");
       file.write(decodeLrc(objOutLr));
       file.close();
-      alert("Saved Lrc File Successfully", scriptName);
+      alert("导出歌词成功", scriptName);
       return true;
     }
   }
@@ -351,5 +328,31 @@
 
   function PrefixZero(number, zeroNum) {
     return (Array(zeroNum).join(0) + number).slice(-zeroNum);
+  }
+  function swapText(layer1, layer2) {
+    var keys1 = layer1.sourceText.selectedKeys;
+    var keys2 = layer2.sourceText.selectedKeys;
+    var marker1 = layer1.property("Marker");
+    var marker2 = layer2.property("Marker");
+    for (var i = 0; i < Math.min(keys1.length, keys2.length); i++) {
+      var textValue1 = layer1.sourceText.keyValue(keys1[i]).text;
+      var textValue2 = layer2.sourceText.keyValue(keys2[i]).text;
+
+      for (var j = 1; j <= marker1.numKeys; j++) {
+        if (marker1.keyValue(j).comment === textValue1) {
+          marker1.keyValue(j).comment = textValue2;
+          marker1.setValueAtKey(j, new MarkerValue(textValue2));
+          break;
+        }
+      }
+      for (var j = 1; j <= marker2.numKeys; j++) {
+        if (marker2.keyValue(j).comment === textValue2) {
+          marker2.setValueAtKey(j, new MarkerValue(textValue1));
+          break;
+        }
+      }
+      layer1.sourceText.setValueAtKey(keys1[i], textValue2);
+      layer2.sourceText.setValueAtKey(keys2[i], textValue1);
+    }
   }
 })(this);

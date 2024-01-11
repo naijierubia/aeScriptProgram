@@ -1,0 +1,11 @@
+安装方法：
+将lrcImport.jsx文件复制到你的AE安装目录\Support Files\Scripts\ScriptUI Panels
+
+脚本功能：
+1. 导入.lrc歌词文件到AE中，支持双语
+2. 交换两个文本层的源文本关键帧的值，此功能是为了能快速交换错位的歌词
+3. 将文本导出为.lrc歌词文件
+
+歌词文件获取方法：
+163：使用163MusicLyrics.exe，输入分享链接中的id值
+企鹅：软件内右键可以直接获取加密歌词，需使用LyricTools.exe解密

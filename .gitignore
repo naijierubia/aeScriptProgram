@@ -4,3 +4,4 @@ test/
 aepDebug/
 backups/
 temp/
+*.zip

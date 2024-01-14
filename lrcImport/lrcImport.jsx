@@ -264,7 +264,7 @@
   function writeLrc(objOutLr) {
     var file = File.saveDialog("导出歌词", "lrc:*.lrc");
     if (file) {
-      file.open("w",encoding="utf-8");
+      file.open("w");
       file.write(decodeLrc(objOutLr));
       file.close();
       alert("导出歌词成功", scriptName);

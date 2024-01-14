@@ -232,9 +232,7 @@
       return false;
     } else {
       var selectedLayers = thisComp.selectedLayers;
-      var selectedTextLayers = selectedLayers.filter(function (layer) {
-        return layer instanceof TextLayer;
-      });
+      var selectedTextLayers = textLayerFilter(selectedLayers);
 
       if (selectedTextLayers.length === 1 || selectedTextLayers.length === 2) {
         var objOutLr = SourceText(selectedTextLayers);
@@ -266,7 +264,7 @@
   function writeLrc(objOutLr) {
     var file = File.saveDialog("导出歌词", "lrc:*.lrc");
     if (file) {
-      file.open("w");
+      file.open("w",encoding="utf-8");
       file.write(decodeLrc(objOutLr));
       file.close();
       alert("导出歌词成功", scriptName);
@@ -354,5 +352,14 @@
       layer1.sourceText.setValueAtKey(keys1[i], textValue2);
       layer2.sourceText.setValueAtKey(keys2[i], textValue1);
     }
+  }
+  function textLayerFilter(list){
+    for (var i = 0; i < list.length; i++) {
+      var textLayers = []
+      if(list[i] instanceof TextLayer){
+        textLayers.push(list[i])
+      }
+    }
+    return textLayers
   }
 })(this);

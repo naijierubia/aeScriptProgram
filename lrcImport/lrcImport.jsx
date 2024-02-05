@@ -3,8 +3,8 @@
  * @author 奈杰Rubia_a
  * @copyright &copy; 2023 奈杰Rubia_a Doe. All rights reserved.
  * @license MIT
- * @version 1.3.0
- * @date 2023.12.16
+ * @version 1.3.2
+ * @date 2024.02.05
  * @github https://github.com/naijierubia/aeScriptProgram
  *
  * @description import lrc file into Adobe After Effects and Support bilingual lyrics
@@ -42,7 +42,8 @@
     });
     ExportBtn.text = "导出歌词";
     ExportBtn.preferredSize.height = 40;
-    ExportBtn.helpTip = "选中歌词至多两个文本层,\n将其源文本关键帧导出为.lrc文件";
+    ExportBtn.helpTip =
+      "选中歌词至多两个文本层,\n将其源文本关键帧导出为.lrc文件";
 
     win.layout.layout(true);
     win.layout.resize();
@@ -85,7 +86,8 @@
         var objLrc = [];
         file.open("r");
         parseLrc(file, objLrc);
-        bubbleSort(objLrc);
+        lrcFormat(objLrc);
+        lrcRemoveBlank(objLrc);
         var isNums = judgeLangNums(objLrc);
         if (!isNums) {
           var lrcOneLang = thisComp.layers.addText("");
@@ -115,7 +117,22 @@
       }
     }
   }
-
+  function lrcRemoveBlank(objLrc) {
+    for (var i = 0; i < objLrc.length; i++) {
+      if (!objLrc[i].lrc) {
+        objLrc.splice(i, 1);
+        i--;
+      }
+    }
+  }
+  function lrcFormat(objLrc) {
+    for (var i = 0; i < objLrc.length - 1; i++) {
+      if (objLrc[i].time === objLrc[i + 1].time) {
+        return;
+      }
+    }
+    bubbleSort(objLrc);
+  }
   function parseLrc(file, objLrc) {
     while ((line = file.readln())) {
       var matcher = line.match(reg);
@@ -353,13 +370,13 @@
       layer2.sourceText.setValueAtKey(keys2[i], textValue1);
     }
   }
-  function textLayerFilter(list){
+  function textLayerFilter(list) {
     for (var i = 0; i < list.length; i++) {
-      var textLayers = []
-      if(list[i] instanceof TextLayer){
-        textLayers.push(list[i])
+      var textLayers = [];
+      if (list[i] instanceof TextLayer) {
+        textLayers.push(list[i]);
       }
     }
-    return textLayers
+    return textLayers;
   }
 })(this);
